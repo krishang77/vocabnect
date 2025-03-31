@@ -9,7 +9,7 @@ import {
   updateProfile
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import { useToast } from "@/hooks/use-toast";
+import { toast } from 'sonner';
 
 const AuthContext = createContext();
 
@@ -20,24 +20,16 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   async function signup(email, password, username) {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       // Set display name
       await updateProfile(userCredential.user, { displayName: username });
-      toast({
-        title: "Account created",
-        description: "Your account has been successfully created.",
-      });
+      toast.success("Account created successfully");
       return userCredential.user;
     } catch (error) {
-      toast({
-        title: "Signup failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(`Signup failed: ${error.message}`);
       throw error;
     }
   }
@@ -45,17 +37,10 @@ export function AuthProvider({ children }) {
   async function login(email, password) {
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
-      toast({
-        title: "Login successful",
-        description: "Welcome back to VocabNest!",
-      });
+      toast.success("Welcome back to VocabNest!");
       return result;
     } catch (error) {
-      toast({
-        title: "Login failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(`Login failed: ${error.message}`);
       throw error;
     }
   }
@@ -63,16 +48,9 @@ export function AuthProvider({ children }) {
   async function logout() {
     try {
       await signOut(auth);
-      toast({
-        title: "Logged out",
-        description: "You have been successfully logged out.",
-      });
+      toast.success("You have been successfully logged out");
     } catch (error) {
-      toast({
-        title: "Logout failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(`Logout failed: ${error.message}`);
       throw error;
     }
   }
@@ -80,16 +58,9 @@ export function AuthProvider({ children }) {
   async function resetPassword(email) {
     try {
       await sendPasswordResetEmail(auth, email);
-      toast({
-        title: "Password reset email sent",
-        description: "Check your email for the password reset link.",
-      });
+      toast.success("Password reset email sent");
     } catch (error) {
-      toast({
-        title: "Reset password failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(`Reset password failed: ${error.message}`);
       throw error;
     }
   }
