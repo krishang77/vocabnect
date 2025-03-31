@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { bookmark, trash } from 'lucide-react';
+import { Bookmark, Trash } from 'lucide-react';
 
 const SavedWordsList = ({ savedWords, onRemove }) => {
   if (savedWords.length === 0) {
     return (
       <div className="text-center py-10">
-        <bookmark className="h-10 w-10 mx-auto text-muted-foreground" />
+        <Bookmark className="h-10 w-10 mx-auto text-muted-foreground" />
         <p className="text-muted-foreground mt-2">Your saved words will appear here</p>
       </div>
     );
@@ -15,7 +15,7 @@ const SavedWordsList = ({ savedWords, onRemove }) => {
   return (
     <div className="mt-6">
       <h2 className="text-xl font-semibold mb-4 flex items-center">
-        <bookmark className="h-5 w-5 mr-2 text-primary" />
+        <Bookmark className="h-5 w-5 mr-2 text-primary" />
         Saved Words ({savedWords.length})
       </h2>
       <div className="space-y-3">
@@ -38,7 +38,7 @@ const SavedWordsList = ({ savedWords, onRemove }) => {
               onClick={() => onRemove(word.word)}
               className="text-muted-foreground hover:text-destructive transition-colors"
             >
-              <trash className="h-4 w-4" />
+              <Trash className="h-4 w-4" />
             </button>
           </div>
         ))}

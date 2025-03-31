@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { search } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 const SearchBar = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,7 +22,7 @@ const SearchBar = ({ onSearch }) => {
           placeholder="Search for a word..."
           className="w-full py-3 px-4 pl-12 rounded-lg border border-border bg-white focus:outline-none focus:ring-2 focus:ring-primary/50 shadow-sm"
         />
-        <search className="absolute left-4 text-muted-foreground h-5 w-5" />
+        <Search className="absolute left-4 text-muted-foreground h-5 w-5" />
         <button
           type="submit"
           className="absolute right-3 bg-primary text-white px-3 py-1 rounded-md text-sm hover:bg-primary/90 transition-colors"

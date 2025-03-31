@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { bookmark, plus, trash } from 'lucide-react';
+import { Bookmark, Plus, Trash } from 'lucide-react';
 
 const WordCard = ({ word, definition, partOfSpeech, example, isSaved, onSave, onRemove }) => {
   return (
@@ -15,7 +15,7 @@ const WordCard = ({ word, definition, partOfSpeech, example, isSaved, onSave, on
             onClick={() => onRemove(word)}
             className="flex items-center text-destructive hover:text-destructive/80 transition-colors"
           >
-            <trash className="h-5 w-5 mr-1" />
+            <Trash className="h-5 w-5 mr-1" />
             <span className="text-sm">Remove</span>
           </button>
         ) : (
@@ -23,7 +23,7 @@ const WordCard = ({ word, definition, partOfSpeech, example, isSaved, onSave, on
             onClick={() => onSave({ word, definition, partOfSpeech, example })}
             className="flex items-center text-primary hover:text-primary/80 transition-colors"
           >
-            <plus className="h-5 w-5 mr-1" />
+            <Plus className="h-5 w-5 mr-1" />
             <span className="text-sm">Save</span>
           </button>
         )}
