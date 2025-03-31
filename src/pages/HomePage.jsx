@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Search, Award, Lightbulb, ArrowRight } from 'lucide-react';
+import { BookOpen, Search, Award, Lightbulb, ArrowRight, Bookmark } from 'lucide-react';
 import Layout from '../components/Layout';
 import { useAuth } from '../contexts/AuthContext';
 
