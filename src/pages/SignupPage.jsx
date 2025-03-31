@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { BookOpen, Lock, Mail, User, ArrowRight } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
 
 const SignupPage = () => {
@@ -11,7 +10,6 @@ const SignupPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signup } = useAuth();
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
@@ -27,20 +25,27 @@ const SignupPage = () => {
       return;
     }
     
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
-    
     try {
       setLoading(true);
-      await signup(email, password, username);
-      navigate('/dashboard');
+      
+      // Demo signup - simulate a brief loading state
+      setTimeout(() => {
+        // Store demo user data in localStorage to simulate authentication
+        const demoUser = {
+          uid: "demo-user-" + Date.now(),
+          email: email,
+          displayName: username
+        };
+        
+        localStorage.setItem('demoUser', JSON.stringify(demoUser));
+        
+        toast.success("Demo account created successfully!");
+        navigate('/dashboard');
+      }, 1000);
+      
     } catch (error) {
-      console.error(error);
-      // Toast is shown in the context
-    } finally {
       setLoading(false);
+      toast.error("Signup failed. Please try again.");
     }
   };
 
@@ -58,6 +63,9 @@ const SignupPage = () => {
         
         <div className="bg-white rounded-xl shadow-sm border border-border p-8">
           <h2 className="text-2xl font-bold text-center mb-6">Create Your Account</h2>
+          <p className="text-center text-muted-foreground mb-4">
+            Demo mode: Enter any details to sign up
+          </p>
           
           <form onSubmit={handleSignup} className="space-y-4">
             <div className="space-y-2">
@@ -132,7 +140,7 @@ const SignupPage = () => {
               {loading ? (
                 <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               ) : (
-                "Sign Up"
+                "Sign Up (Demo)"
               )}
             </button>
           </form>

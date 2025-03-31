@@ -21,6 +21,24 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Check for demo user in localStorage
+  useEffect(() => {
+    const demoUser = localStorage.getItem('demoUser');
+    
+    if (demoUser) {
+      setCurrentUser(JSON.parse(demoUser));
+      setLoading(false);
+    } else {
+      // Firebase auth state listener
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setCurrentUser(user);
+        setLoading(false);
+      });
+      
+      return unsubscribe;
+    }
+  }, []);
+
   async function signup(email, password, username) {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -36,6 +54,19 @@ export function AuthProvider({ children }) {
 
   async function login(email, password) {
     try {
+      // Check if it's a demo login attempt
+      const demoUser = localStorage.getItem('demoUser');
+      
+      if (demoUser) {
+        const parsedUser = JSON.parse(demoUser);
+        if (parsedUser.email === email) {
+          setCurrentUser(parsedUser);
+          toast.success("Demo login successful!");
+          return { user: parsedUser };
+        }
+      }
+      
+      // Regular Firebase login
       const result = await signInWithEmailAndPassword(auth, email, password);
       toast.success("Welcome back to VocabNest!");
       return result;
@@ -47,6 +78,15 @@ export function AuthProvider({ children }) {
 
   async function logout() {
     try {
+      // Check if we're in demo mode
+      if (localStorage.getItem('demoUser')) {
+        localStorage.removeItem('demoUser');
+        setCurrentUser(null);
+        toast.success("Demo user logged out successfully");
+        return;
+      }
+      
+      // Regular Firebase logout
       await signOut(auth);
       toast.success("You have been successfully logged out");
     } catch (error) {
@@ -57,6 +97,12 @@ export function AuthProvider({ children }) {
 
   async function resetPassword(email) {
     try {
+      // In demo mode, just show a success message
+      if (localStorage.getItem('demoUser')) {
+        toast.success("Demo: Password reset email would be sent");
+        return;
+      }
+      
       await sendPasswordResetEmail(auth, email);
       toast.success("Password reset email sent");
     } catch (error) {
@@ -64,15 +110,6 @@ export function AuthProvider({ children }) {
       throw error;
     }
   }
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      setLoading(false);
-    });
-
-    return unsubscribe;
-  }, []);
 
   const value = {
     currentUser,
