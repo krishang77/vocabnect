@@ -1,7 +1,10 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, Send, X, BotIcon, User } from 'lucide-react';
 import { toast } from 'sonner';
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI("AIzaSyDWEDoZhyZxKdk7WNMjWwVQxL5I8er2M0g");
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const ChatbotComponent = () => {
   const [open, setOpen] = useState(false);
@@ -23,7 +26,7 @@ const ChatbotComponent = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (inputMessage.trim() === '') return;
 
     // Add user message
@@ -35,41 +38,37 @@ const ChatbotComponent = () => {
     setInputMessage('');
     setIsTyping(true);
 
-    // Simulate API call delay
-    setTimeout(() => {
-      const botResponses = getBotResponse(inputMessage);
-      setMessages((prev) => [...prev, botResponses]);
+    try {
+      // Prepare conversation history for context
+      const conversationHistory = messages
+        .map(msg => `${msg.role === 'assistant' ? 'AI: ' : 'User: '}${msg.content}`)
+        .join('\n');
+      
+      // Add user's current question
+      const prompt = `${conversationHistory}\nUser: ${inputMessage}\n\nYou are VocabAssist, a helpful vocabulary learning assistant. You specialize in vocabulary learning, dictionary usage, language learning tips, and related topics. Please keep responses concise and focused on helping with vocabulary learning. AI:`;
+      
+      // Generate content using Gemini
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const textResponse = response.text();
+      
+      // Add AI response to messages
+      setMessages((prev) => [...prev, { 
+        role: 'assistant', 
+        content: textResponse 
+      }]);
+    } catch (error) {
+      console.error("Error generating response:", error);
+      
+      // Fallback to local response in case of an error
+      setMessages((prev) => [...prev, { 
+        role: 'assistant', 
+        content: "I'm sorry, I'm having trouble connecting to my knowledge base. Please try again in a moment or ask a different question about vocabulary learning." 
+      }]);
+      
+      toast.error("Unable to generate response. Network or API issue.");
+    } finally {
       setIsTyping(false);
-    }, 1000);
-  };
-
-  const getBotResponse = (message) => {
-    const lowerCaseMessage = message.toLowerCase();
-    
-    // Simple response logic based on keywords
-    if (lowerCaseMessage.includes('hello') || lowerCaseMessage.includes('hi')) {
-      return { role: 'assistant', content: 'Hello! How can I help you with vocabulary today?' };
-    } 
-    else if (lowerCaseMessage.includes('synonym') || lowerCaseMessage.includes('similar')) {
-      return { role: 'assistant', content: 'To find synonyms for a word, you can use the "Find Word" feature and look at related words section. Would you like me to guide you there?' };
-    }
-    else if (lowerCaseMessage.includes('save') || lowerCaseMessage.includes('bookmark')) {
-      return { role: 'assistant', content: 'To save words to your collection, use the bookmark icon when viewing a word. You can access all your saved words in the "Saved Words" section.' };
-    }
-    else if (lowerCaseMessage.includes('learn') || lowerCaseMessage.includes('tips') || lowerCaseMessage.includes('improve')) {
-      return { role: 'assistant', content: 'Great way to improve your vocabulary: 1) Read regularly 2) Use new words in sentences 3) Review your saved words daily 4) Try to learn words in context rather than in isolation.' };
-    }
-    else if (lowerCaseMessage.includes('thank')) {
-      return { role: 'assistant', content: "You're welcome! If you have any more questions, feel free to ask me anytime." };
-    }
-    else if (lowerCaseMessage.includes('logout') || lowerCaseMessage.includes('sign out')) {
-      return { role: 'assistant', content: "To logout, click on the logout button in the top-right corner of the page." };
-    }
-    else if (lowerCaseMessage.includes('word') && (lowerCaseMessage.includes('meaning') || lowerCaseMessage.includes('definition'))) {
-      return { role: 'assistant', content: "To find the meaning of a word, use the 'Find Word' feature from the navigation menu. Enter the word you want to look up and you'll see its definition, examples, and more." };
-    }
-    else {
-      return { role: 'assistant', content: "I'm a demo assistant to help with vocabulary questions. Try asking me about how to save words, find meanings, or get vocabulary learning tips!" };
     }
   };
 
@@ -134,7 +133,7 @@ const ChatbotComponent = () => {
                       {message.role === 'user' ? 'You' : 'VocabAssist'}
                     </span>
                   </div>
-                  <p className="text-sm">{message.content}</p>
+                  <p className="text-sm whitespace-pre-line">{message.content}</p>
                 </div>
               </div>
             ))}
@@ -165,14 +164,14 @@ const ChatbotComponent = () => {
               />
               <button
                 onClick={handleSend}
-                disabled={inputMessage.trim() === ''}
+                disabled={inputMessage.trim() === '' || isTyping}
                 className="bg-primary text-white rounded-r-md px-4 py-2 hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
                 <Send size={18} />
               </button>
             </div>
             <p className="text-xs text-muted-foreground mt-1 text-center">
-              This is a demo assistant. Try asking about vocabulary features!
+              Ask me about vocabulary learning, word meanings, or language tips!
             </p>
           </div>
         </div>
