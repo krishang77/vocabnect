@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, Lock, Mail, User, ArrowRight } from 'lucide-react';
+import { BookOpen, Lock, Mail, User, ArrowRight, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 
 const SignupPage = () => {
@@ -130,6 +130,13 @@ const SignupPage = () => {
                   required
                 />
               </div>
+            </div>
+            
+            <div className="bg-primary/5 p-3 rounded-md border border-primary/10 flex items-start">
+              <MessageSquare className="h-5 w-5 text-primary mt-0.5 mr-2 flex-shrink-0" />
+              <p className="text-sm text-muted-foreground">
+                Create your account to access our AI vocabulary assistant that helps you learn and practice new words!
+              </p>
             </div>
             
             <button

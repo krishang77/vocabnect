@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { BookOpen, Search, Bookmark, User, LogOut, Home } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
+import ChatbotComponent from './ChatbotComponent';
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -82,6 +83,9 @@ const Layout = ({ children }) => {
       <main className="container mx-auto px-4 py-6 flex-grow mb-16 md:mb-0">
         {children}
       </main>
+      
+      {/* Chatbot Component */}
+      <ChatbotComponent />
       
       {/* Footer */}
       <footer className="bg-white border-t border-border py-4">
